@@ -1,0 +1,106 @@
+#!/usr/bin/ruby
+require 'rubygems'
+require 'grit'
+require 'yaml'
+require 'benchmark'
+
+FILTER = /\.(c|h|cpp|cxx|cc|hpp|java)$/
+
+class Grit::Commit
+  def merge?
+    self.parents.size > 1
+  end
+  def parentless
+    self.parents.size == 0
+  end
+  def wanted?
+    files = `git show --pretty=format: --name-only #{id}`.split
+    matches = (files.any? { |path| path =~ FILTER })
+    !merge? && matches 
+  end
+  def previous_wanted
+    if merge? || parentless
+      nil
+    else
+      previous = self.parents.first
+      if previous.wanted?
+        previous
+      else
+        previous.previous_wanted
+      end
+    end
+  end
+  def wanted_list
+    commit = self.wanted? ? self : self.previous_wanted
+    if commit
+      result = []
+      while commit
+        result << commit
+        commit = commit.previous_wanted
+      end
+      result
+    else
+      []
+    end
+  end
+end
+
+class EgyptRunner
+  def self.metrics(commit)
+    system("git checkout #{commit} > /dev/null 2> /dev/null")
+    yaml_metrics = `egypt-metrics . 2> /dev/null`
+    if yaml_metrics == "" then
+      false
+    else
+      YAML.load_stream(`egypt-metrics . 2> /dev/null`).documents
+    end
+  end
+  def self.metricsCSV(commit)
+    csv_string = ""
+    csv_string << commit.id; csv_string << ","
+    pa = commit.previous_wanted
+    if !pa then
+    else
+      csv_string << commit.previous_wanted.id
+    end
+    csv_string << ",\""
+    csv_string << commit.author.name; csv_string << "\","
+    csv_string << commit.author.email; csv_string << ","
+
+    metr = metrics(commit)
+
+    if !metr then
+    else
+      metr = metr[0]
+      csv_string << metr["average_coupling"].to_s; csv_string << ","
+      csv_string << metr["average_lcom4"].to_s; csv_string << ","
+      csv_string << metr["number_of_functions"].to_s; csv_string << ","
+      csv_string << metr["number_of_modules"].to_s; csv_string << ","
+      csv_string << metr["number_of_public_functions"].to_s; csv_string << ",\""
+    end
+    csv_string << `git show --pretty=format: --name-only #{commit.id}`.split.join(',')
+    csv_string << "\",\""
+    csv_string << commit.authored_date.rfc2822; csv_string << "\""
+  end
+end
+
+system("git checkout master > /dev/null 2> /dev/null")
+tree = Grit::Repo.new('.').commits.first
+
+File.open('metrics.csv', 'w') do |file|
+  file.puts "commit_id,nearest_changend_ancestral_id,author,e-mail,average_coupiling,average_lcom4,number_of_functions,number_of_modules,number_of_public_functions,changed_files,date\n"
+  wl = tree.wanted_list
+  puts "Processing #{wl.size} commits..."
+  wl.each do |commit|
+    mcsv = EgyptRunner.metricsCSV(commit)
+    if !mcsv then
+    else
+      file.puts mcsv
+    end
+    print "."
+  end
+  puts "\nFinished\n"
+  system("git checkout master > /dev/null 2> /dev/null")
+end
+
+
