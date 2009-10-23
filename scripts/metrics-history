@@ -1,4 +1,18 @@
 #!/usr/bin/ruby
+# metrics-history
+# Generates the metrics of the whole history of an application.
+# Antônio Terceiro (terceiro@dcc.ufba.br)
+# Luiz Romário Santana Rios (luizromario@gmail.com)
+# 
+# Run it from the application's repository folder. The metrics will
+# be stored at the metrics.csv file. It only works with git at the 
+# moment. If your project is using another version control system,
+# you will need to import it to git.
+#
+# WARNING NOTE: Do not run this script in a work folder, since it 
+# will checkout every commit in history, which may destroy your
+# ongoing work.
+#
 require 'rubygems'
 require 'grit'
 require 'yaml'
