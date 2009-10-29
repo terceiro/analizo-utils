@@ -4,10 +4,7 @@
 # Antônio Terceiro (terceiro@dcc.ufba.br)
 # Luiz Romário Santana Rios (luizromario@gmail.com)
 # 
-# Run it from the application's repository folder. The metrics will
-# be stored at the metrics.csv file. It only works with git at the 
-# moment. If your project is using another version control system,
-# you will need to import it to git.
+# Usage: ./metrics-history directory
 #
 # WARNING NOTE: Do not run this script in a work folder, since it 
 # will checkout every commit in history, which may destroy your
@@ -98,11 +95,22 @@ class EgyptRunner
   end
 end
 
+if !ARGV[0] then
+  puts "Usage: #{$PROGRAM_NAME} directory"
+  exit
+end
+begin
+  tree = Grit::Repo.new(ARGV[0]).commits.first
+rescue Grit::InvalidGitRepositoryError
+  puts "Error: Not a git repository."
+  exit
+end
+previous_directory = Dir.pwd
+Dir.chdir(ARGV[0])
 system("git checkout master > /dev/null 2> /dev/null")
-tree = Grit::Repo.new('.').commits.first
 
 File.open('metrics.csv', 'w') do |file|
-  file.puts "commit_id,nearest_changend_ancestral_id,author,e-mail,average_coupiling,average_lcom4,number_of_functions,number_of_modules,number_of_public_functions,changed_files,date\n"
+  file.puts "commit_id,nearest_chngend_ancestral_id,author,e-mail,average_coupiling,average_lcom4,number_of_functions,number_of_modules,number_of_public_functions,changed_files,date\n"
   wl = tree.wanted_list
   puts "Processing #{wl.size} commits..."
   wl.each do |commit|
@@ -113,7 +121,7 @@ File.open('metrics.csv', 'w') do |file|
     end
     print "."
   end
-  puts "\nFinished\n"
+  puts "\nDone\n"
   system("git checkout master > /dev/null 2> /dev/null")
 end
 
