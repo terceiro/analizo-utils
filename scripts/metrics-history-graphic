@@ -1,0 +1,34 @@
+#!/usr/bin/ruby
+require 'csv'
+require 'Qt4'
+
+def loadCSV(file)
+  csvTable = []
+  CSV::Reader.parse(File.open(file)){|line| csvTable << line}
+  csvTable.transpose
+end
+
+class CSVPlot < Qt::Widget
+  attr_accessor :csvTable
+  def paintEvent(event)
+    painter = Qt::Painter.new(self)
+    if @csvTable then
+      painter.drawText(20, 20, @csvTable[5][0])
+      @csvTable[5].each_index do |i|
+        if @csvTable[5][i+8]
+          painter.drawLine(i+1, self.height-@csvTable[5].reverse.map{|x| 60*x.to_f}[i+1], i+2, self.height-@csvTable[5].reverse.map{|x| 60*x.to_f}[i+2])
+        end
+      end
+    end
+    painter.end
+  end
+end
+
+app = Qt::Application.new(ARGV)
+
+plot = CSVPlot.new
+plot.csvTable = loadCSV(ARGV[0])
+plot.resize(1024, 600)
+plot.show()
+
+app.exec
