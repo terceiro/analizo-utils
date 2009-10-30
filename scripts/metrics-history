@@ -59,8 +59,7 @@ end
 class EgyptRunner
   def self.metrics(commit)
     system("git checkout #{commit} > /dev/null 2>> git.log")
-    yaml_metrics = `egypt-metrics . 2>> egypt.log`
-    if yaml_metrics == "" then
+    if "" == yaml_metrics = `egypt-metrics . 2>> egypt.log` then
       false
     else
       YAML.load_stream(yaml_metrics).documents
@@ -75,19 +74,13 @@ class EgyptRunner
       if pa then
         csv_string << commit.previous_wanted.id
       end
-      csv_string << ",\""
-      csv_string << commit.author.name; csv_string << "\","
+      csv_string << ","
+      csv_string << commit.author.name.inspect; csv_string << ","
       csv_string << commit.author.email; csv_string << ","
 
-      metr = metr[0]
-      csv_string << metr["average_coupling"].to_s; csv_string << ","
-      csv_string << metr["average_lcom4"].to_s; csv_string << ","
-      csv_string << metr["number_of_functions"].to_s; csv_string << ","
-      csv_string << metr["number_of_modules"].to_s; csv_string << ","
-      csv_string << metr["number_of_public_functions"].to_s; csv_string << ",\""
-      csv_string << `git show --pretty=format: --name-only #{commit.id}`.split.join(',')
-      csv_string << "\",\""
-      csv_string << commit.authored_date.rfc2822; csv_string << "\""
+      csv_string << metr[0].keys.sort.map{|key| metr[0][key]}.join(','); csv_string << ","
+      csv_string << `git show --pretty=format: --name-only #{commit.id}`.split.join(',').inspect; csv_string << ","
+      csv_string << commit.authored_date.rfc2822.inspect
     end
   end
 end
@@ -99,7 +92,7 @@ end
 begin
   tree = Grit::Repo.new(ARGV[0]).commits.first
 rescue Grit::InvalidGitRepositoryError
-  puts "Error: Not a git repository."
+  puts "Fatal: Not a git repository."
   exit
 end
 previous_directory = Dir.pwd
@@ -112,7 +105,7 @@ File.open('metrics.csv', 'w') do |file|
   file.puts "commit_id,nearest_chngend_ancestral_id,author,e-mail,average_coupiling,average_lcom4,number_of_functions,number_of_modules,number_of_public_functions,changed_files,date\n"
   wl = tree.wanted_list
   if wl.size == 0 then
-    puts "No relevant commits to process"
+    puts "No relevant commits to proccess"
   else
     print "Processing " 
     if wl.size == 1 then
@@ -132,13 +125,15 @@ File.open('metrics.csv', 'w') do |file|
     end
   end
   if error_counter == 0 then
-    puts "\nDone\n"
-  elsif error_counter == 1 then
-    print "\nOne error"
+    puts "\nDone.\n"
   else
-    print "\n#{error_counter} errors"
+    if error_counter == 1 then
+      print "\nOne error"
+    else
+      print "\n#{error_counter} errors"
+    end
+    puts " ocurred. Check egypt.log and git.log for more details.\n"
   end
-  puts " ocurred. Check egypt.log and git.log for more details.\n"
   system("git checkout master > /dev/null 2>> git.log")
 end
 
