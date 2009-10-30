@@ -58,40 +58,37 @@ end
 
 class EgyptRunner
   def self.metrics(commit)
-    system("git checkout #{commit} > /dev/null 2> /dev/null")
-    yaml_metrics = `egypt-metrics . 2> /dev/null`
+    system("git checkout #{commit} > /dev/null 2>> git.log")
+    yaml_metrics = `egypt-metrics . 2>> egypt.log`
     if yaml_metrics == "" then
       false
     else
-      YAML.load_stream(`egypt-metrics . 2> /dev/null`).documents
+      YAML.load_stream(yaml_metrics).documents
     end
   end
   def self.metricsCSV(commit)
-    csv_string = ""
-    csv_string << commit.id; csv_string << ","
-    pa = commit.previous_wanted
-    if !pa then
-    else
-      csv_string << commit.previous_wanted.id
-    end
-    csv_string << ",\""
-    csv_string << commit.author.name; csv_string << "\","
-    csv_string << commit.author.email; csv_string << ","
-
     metr = metrics(commit)
+    if metr then
+      csv_string = ""
+      csv_string << commit.id; csv_string << ","
+      pa = commit.previous_wanted
+      if pa then
+        csv_string << commit.previous_wanted.id
+      end
+      csv_string << ",\""
+      csv_string << commit.author.name; csv_string << "\","
+      csv_string << commit.author.email; csv_string << ","
 
-    if !metr then
-    else
       metr = metr[0]
       csv_string << metr["average_coupling"].to_s; csv_string << ","
       csv_string << metr["average_lcom4"].to_s; csv_string << ","
       csv_string << metr["number_of_functions"].to_s; csv_string << ","
       csv_string << metr["number_of_modules"].to_s; csv_string << ","
       csv_string << metr["number_of_public_functions"].to_s; csv_string << ",\""
+      csv_string << `git show --pretty=format: --name-only #{commit.id}`.split.join(',')
+      csv_string << "\",\""
+      csv_string << commit.authored_date.rfc2822; csv_string << "\""
     end
-    csv_string << `git show --pretty=format: --name-only #{commit.id}`.split.join(',')
-    csv_string << "\",\""
-    csv_string << commit.authored_date.rfc2822; csv_string << "\""
   end
 end
 
@@ -107,22 +104,42 @@ rescue Grit::InvalidGitRepositoryError
 end
 previous_directory = Dir.pwd
 Dir.chdir(ARGV[0])
-system("git checkout master > /dev/null 2> /dev/null")
+system("echo \"#{Time.now}\" >> git.log")
+system("echo \"#{Time.now}\" >> egypt.log")
+system("git checkout master > /dev/null 2>> git.log")
 
 File.open('metrics.csv', 'w') do |file|
   file.puts "commit_id,nearest_chngend_ancestral_id,author,e-mail,average_coupiling,average_lcom4,number_of_functions,number_of_modules,number_of_public_functions,changed_files,date\n"
   wl = tree.wanted_list
-  puts "Processing #{wl.size} commits..."
-  wl.each do |commit|
-    mcsv = EgyptRunner.metricsCSV(commit)
-    if !mcsv then
+  if wl.size == 0 then
+    puts "No relevant commits to process"
+  else
+    print "Processing " 
+    if wl.size == 1 then
+      puts "one commit"
     else
-      file.puts mcsv
+      puts "#{wl.size} commits..."
     end
-    print "."
   end
-  puts "\nDone\n"
-  system("git checkout master > /dev/null 2> /dev/null")
+  error_counter = 0
+  wl.each do |commit|
+    if mcsv = EgyptRunner.metricsCSV(commit) then
+      file.puts mcsv
+      print "."
+    else
+      print "E"
+      error_counter +=1
+    end
+  end
+  if error_counter == 0 then
+    puts "\nDone\n"
+  elsif error_counter == 1 then
+    print "\nOne error"
+  else
+    print "\n#{error_counter} errors"
+  end
+  puts " ocurred. Check egypt.log and git.log for more details.\n"
+  system("git checkout master > /dev/null 2>> git.log")
 end
 
 
