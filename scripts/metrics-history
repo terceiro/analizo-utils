@@ -56,10 +56,10 @@ class Grit::Commit
   end
 end
 
-class EgyptRunner
+class AnalizoRunner
   def self.metrics(commit)
     system("git checkout #{commit} > /dev/null 2>> git.log")
-    if "" == yaml_metrics = `egypt-metrics . 2>> egypt.log` then
+    if "" == yaml_metrics = `analizo-metrics . 2>> analizo.log` then
       false
     else
       YAML.load_stream(yaml_metrics).documents
@@ -98,11 +98,11 @@ end
 previous_directory = Dir.pwd
 Dir.chdir(ARGV[0])
 system("echo \"#{Time.now}\" >> git.log")
-system("echo \"#{Time.now}\" >> egypt.log")
+system("echo \"#{Time.now}\" >> analizo.log")
 system("git checkout master > /dev/null 2>> git.log")
 
 File.open('metrics.csv', 'w') do |file|
-  file.puts "commit_id,nearest_chngend_ancestral_id,author,e-mail,average_coupiling,average_lcom4,number_of_functions,number_of_modules,number_of_public_functions,changed_files,date\n"
+  file.puts "commit_id,nearest_chngend_ancestral_id,author,e-mail,average_coupiling,average_lcom4,number_of_functions,number_of_modules,number_of_public_functions,total_loc,changed_files,date\n"
   wl = tree.wanted_list
   if wl.size == 0 then
     puts "No relevant commits to proccess"
@@ -116,7 +116,7 @@ File.open('metrics.csv', 'w') do |file|
   end
   error_counter = 0
   wl.each do |commit|
-    if mcsv = EgyptRunner.metricsCSV(commit) then
+    if mcsv = AnalizoRunner.metricsCSV(commit) then
       file.puts mcsv
       print "."
     else
@@ -132,7 +132,7 @@ File.open('metrics.csv', 'w') do |file|
     else
       print "\n#{error_counter} errors"
     end
-    puts " ocurred. Check egypt.log and git.log for more details.\n"
+    puts " ocurred. Check analizo.log and git.log for more details.\n"
   end
   system("git checkout master > /dev/null 2>> git.log")
 end
