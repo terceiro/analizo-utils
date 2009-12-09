@@ -67,6 +67,7 @@ summary_header=""
 i=0
 for dir in $input; do
 
+  i=$(($i+1))
   project=$(basename $dir)
   output="$project.yml"
   analizo metrics -g "$dir" > "$output"
@@ -91,7 +92,6 @@ for dir in $input; do
     echo "$dir$data" >> $summary_file
   fi
 
-  i=$(($i+1))
   info "Processed $project ($i/$input_count)"
 
 done
