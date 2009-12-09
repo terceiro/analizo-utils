@@ -89,7 +89,7 @@ for dir in $input; do
     fi
     # body
     data=$(awk -F ': ' 'BEGIN { line="" } {if ($2) line = line "," $2; end} END { print line }' $output)
-    echo "$dir$data" >> $summary_file
+    echo "$project$data" >> $summary_file
   fi
 
   info "Processed $project ($i/$input_count)"
