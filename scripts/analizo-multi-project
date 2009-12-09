@@ -4,14 +4,94 @@ PROGRAM_NAME=$(basename $0)
 
 warn() {
   msg="$1"
-  echo "$PROGRAM_NAME: $msg"
+  echo "W: $msg"
 }
 
-for dir in $(find . -mindepth 1 -maxdepth 1 -type d -not -name .git -and -not -name .svn); do
-  analizo metrics "$dir" > "$dir.yml"
-  if [ ! -s "$dir.yml" ]; then
+info(){
+  msg="$1"
+  echo "I: $msg"
+}
+
+usage() {
+  echo "Usage: $0 [OPTIONS] [directory [directory ...]]"
+  echo
+  echo "Options:"
+  echo
+  echo "  --help                 Displays the help (this screen)"
+  echo "  -s|--summary FILE      Outputs a total of all projects in CSV format to FILE"
+  echo
+  echo "If you specify no directories to operate on, all directories"
+  echo "immediately below the current directory will be scanned."
+}
+
+# defaults
+input=""
+summary=false
+
+while [ $# -gt 0 ]; do
+  opt="$1"
+  shift
+  case "$opt" in
+    --help)
+      usage
+      exit 0
+      ;;
+    -s|--summary)
+      summary=true
+      if [ $# -eq 0 ]; then
+        usage
+        exit 1
+      else
+        summary_file="$1"
+        shift
+      fi
+      ;;
+    -*|--*)
+      echo "Invalid option: $opt"
+      usage
+      exit 1
+      ;;
+    *)
+      input="$input $opt"
+      ;;
+  esac
+done
+
+if [ "$input" = "" ]; then
+  input=$(find . -mindepth 1 -maxdepth 1 -type d -not -name .git -and -not -name .svn  | sort)
+fi
+
+input_count=$(echo $input | wc -w)
+
+summary_header=""
+i=0
+for dir in $input; do
+
+  project=$(basename $dir)
+  output="$project.yml"
+  analizo metrics -g "$dir" > "$output"
+
+  # directory did not contain source code, analizo produced nothing
+  if [ ! -s "$output" ]; then
     warn "It looks like $dir does not contain source code to be analyzed."
     warn "You'll probably want to check it out manually."
-    rm -f "$dir.yml"
+    rm -f "$output"
+    continue
   fi
+
+  # accumulate results
+  if [ $summary = true ]; then
+    # header
+    if [ "$summary_header" = "" ]; then
+      summary_header=$(awk -F ': ' 'BEGIN { line="" } {if ($2) line = line "," $1; end} END { print line }' $output)
+      echo "project$summary_header" > $summary_file
+    fi
+    # body
+    data=$(awk -F ': ' 'BEGIN { line="" } {if ($2) line = line "," $2; end} END { print line }' $output)
+    echo "$dir$data" >> $summary_file
+  fi
+
+  i=$(($i+1))
+  info "Processed $project ($i/$input_count)"
+
 done
