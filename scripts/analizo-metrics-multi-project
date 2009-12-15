@@ -70,6 +70,13 @@ for dir in $input; do
   i=$(($i+1))
   project=$(basename $dir)
   output="$project.yml"
+
+  if [ -e "$output" ]; then
+    info "$project already processed, skipping (remove $output to force reprocessing)"
+  else
+    info "Processing $project ..."
+  fi
+
   analizo metrics -g "$dir" > "$output"
 
   # directory did not contain source code, analizo produced nothing
