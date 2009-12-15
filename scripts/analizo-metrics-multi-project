@@ -73,6 +73,7 @@ for dir in $input; do
 
   if [ -e "$output" ]; then
     info "$project already processed, skipping (remove $output to force reprocessing)"
+    continue
   else
     info "Processing $project ..."
   fi
