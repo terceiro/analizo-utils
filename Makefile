@@ -4,6 +4,7 @@ all:
 	@echo nothing to build
 
 install:
+	mkdir -p $(DESTDIR)$(PREFIX)/bin
 	install -m 755 scripts/analizo-metrics-multi-project $(DESTDIR)$(PREFIX)/bin
 	install -m 755 scripts/analizo-metrics-history       $(DESTDIR)$(PREFIX)/bin
 
