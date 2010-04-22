@@ -1,3 +1,9 @@
+analizo-utils (0.2.0-1) unstable; urgency=low
+
+  * New uptream release.
+
+ -- Antonio Terceiro <terceiro@softwarelivre.org>  Thu, 22 Apr 2010 20:47:58 -0300
+
 analizo-utils (0.1.1-2) unstable; urgency=low
 
   * debian/control: Added dependency on analizo
