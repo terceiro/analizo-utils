@@ -45,8 +45,20 @@ class EvolutionMatrix
   end
   def versions
     @cells.values.map(&:keys).flatten.uniq.sort do |a,b|
-      cmd = "dpkg --compare-versions #{a} le #{b}"
-      (a == b) ? 0 : (system(cmd) ? -1 : 1)
+      compare_versions(a,b)
+    end
+  end
+  def compare_versions(a,b)
+    if (a == b)
+      0
+    else
+      a_array = a.split(/[^0-9]+/).map(&:to_i)
+      b_array = b.split(/[^0-9]+/).map(&:to_i)
+      while (a_array.first == b_array.first)
+        a_array.shift
+        b_array.shift
+      end
+      a_array.first <=> b_array.first
     end
   end
   def modules
