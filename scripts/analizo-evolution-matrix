@@ -22,6 +22,9 @@
 #
 # --name <name>
 #    Sets the name of the project being analysed. Used in the generated report.
+#
+# --output <file>, -o <file>
+#    Writes output to <file> instead of to standard output.
 
 class EvolutionMatrix
   class Cell
@@ -107,10 +110,12 @@ if $PROGRAM_NAME == __FILE__
   matrix = EvolutionMatrix.new
   my_binding = binding
 
+  output = $stdout
   opts = GetoptLong.new(
     ['--height', '-h', GetoptLong::REQUIRED_ARGUMENT],
     ['--width', '-w', GetoptLong::REQUIRED_ARGUMENT],
     ['--name', '-n', GetoptLong::REQUIRED_ARGUMENT],
+    ['--output', '-o', GetoptLong::REQUIRED_ARGUMENT],
     ['--help', GetoptLong::NO_ARGUMENT]
   )
   opts.each do |opt, arg|
@@ -123,6 +128,8 @@ if $PROGRAM_NAME == __FILE__
       matrix.cell_width = arg
     when '--height'
       matrix.cell_height = arg
+    when '--output'
+      output = File.open(arg, 'w')
     end
   end
 
