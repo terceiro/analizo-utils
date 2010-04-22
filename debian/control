@@ -1,0 +1,17 @@
+Source: analizo-utils
+Section: devel
+Priority: extra
+Maintainer: Antonio Terceiro <terceiro@softwarelivre.org>
+Build-Depends: debhelper (>= 7.0.50), autotools-dev
+Standards-Version: 3.8.4
+Homepage: http://github.com/terceiro/analizo-utils
+Vcs-Git: git://github.com/terceiro/analizo-utils.git
+Vcs-Browser: http://github.com/terceiro/analizo-utils
+
+Package: analizo-utils
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Utilities used together with analizo
+ analizo-utils contains utility scripts for analizo. Most of the scripts are
+ user to do large-scale processing of source code, like processing several
+ projects at once, processing the entire history of a project etc.

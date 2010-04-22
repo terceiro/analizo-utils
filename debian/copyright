@@ -1,0 +1,41 @@
+This work was packaged for Debian by:
+
+    Antonio Terceiro <terceiro@softwarelivre.org> on Thu, 22 Apr 2010 18:29:36 -0300
+
+It was downloaded from:
+
+    http://github.com/terceiro/analizo-utils
+
+Upstream Author(s):
+
+    Antonio Terceiro <terceiro@softwarelivre.org>
+    Luiz Romário Santana Rios <luizromario@gmail.com>
+
+Copyright:
+
+    <Copyright (C) YYYY Firstname Lastname>
+    <likewise for another author>
+
+License:
+
+    Copyright © 2009-2010, Antonio Terceiro <terceiro@softwarelivre.org>
+    Copyright © 2009, Luiz Romário Santana Rios <luizromario@gmail.com>
+    
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+The Debian packaging is:
+
+    Copyright (C) 2010 Antonio Terceiro <terceiro@softwarelivre.org>
+
+and is licensed under the same license as analizo-utils itself.
