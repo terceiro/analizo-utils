@@ -1,24 +1,21 @@
-About
-=====
+analizo-utils package
+=====================
 
 This project contains utility scripts for analizo. Most of the scripts are used
 to do large-scale processing of source code, like processing several projects
 at once, processing the entire history of a project etc.
 
-Installing
-==========
+Installation
+------------
 
-  sudo make install
+It is easy to install analizo-utils. Run the following command as root:
 
-Uninstalling
-============
-
-  sudo make uninstall
+  ./configure && make install
 
 Copyright
-=========
+---------
 
-Copyright © 2009, Antonio Terceiro <terceiro@softwarelivre.org>
+Copyright © 2009-2010, Antonio Terceiro <terceiro@softwarelivre.org>
 Copyright © 2009, Luiz Romário Santana Rios <luizromario@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
