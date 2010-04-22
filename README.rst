@@ -8,7 +8,7 @@ at once, processing the entire history of a project etc.
 Installation
 ------------
 
-It is easy to install analizo-utils. Run the following command as root:
+It is easy to install analizo-utils. Run the following command as root::
 
   ./configure && make install
 
