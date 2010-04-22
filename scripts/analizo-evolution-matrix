@@ -134,6 +134,7 @@ if $PROGRAM_NAME == __FILE__
   data_files.each do |yml|
     version = yml.sub(/^.*-(.*)\.yml$/, '\1')
     File.open(yml) do |f|
+      $stderr.puts "Processing #{yml} ..."
       stream = YAML.load_stream(f)
       stream.documents.each do |doc|
         if doc['_module']
