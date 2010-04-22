@@ -9,8 +9,8 @@ Vcs-Git: git://github.com/terceiro/analizo-utils.git
 Vcs-Browser: http://github.com/terceiro/analizo-utils
 
 Package: analizo-utils
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Architecture: all
+Depends: ruby, ${shlibs:Depends}, ${misc:Depends}
 Description: Utilities used together with analizo
  analizo-utils contains utility scripts for analizo. Most of the scripts are
  user to do large-scale processing of source code, like processing several

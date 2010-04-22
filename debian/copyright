@@ -38,4 +38,5 @@ The Debian packaging is:
 
     Copyright (C) 2010 Antonio Terceiro <terceiro@softwarelivre.org>
 
-and is licensed under the same license as analizo-utils itself.
+and is licensed under the GPL version 3,
+see "/usr/share/common-licenses/GPL-3".
