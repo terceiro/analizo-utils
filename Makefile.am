@@ -11,7 +11,7 @@ checkrepo:
 
 checktag:
 	@echo "Checking existance of $(VERSION) tag ..."
-	@(git tag | grep "^$(VERSION)" > /dev/null) && (echo "**** There is already a tag for version $(VERSION); cannot continue with release"; false) || true
+	@if (git tag | grep "^$(VERSION)" > /dev/null); then echo "**** There is already a tag for version $(VERSION); cannot continue with release" ; false; fi
 
 release: AUTHORS checkrepo checktag dist
 	@echo "Tagging version $(VERSION) ..."
