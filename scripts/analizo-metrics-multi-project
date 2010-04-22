@@ -19,6 +19,7 @@ usage() {
   echo
   echo "  --help                 Displays the help (this screen)"
   echo "  -s|--summary FILE      Outputs a total of all projects in CSV format to FILE"
+  echo "  -m|--modules           Outputs module metrics as well for each project. Conflicts with -s."
   echo
   echo "If you specify no directories to operate on, all directories"
   echo "immediately below the current directory will be scanned."
@@ -27,6 +28,7 @@ usage() {
 # defaults
 input=""
 summary=false
+analizo_options="-g"
 
 while [ $# -gt 0 ]; do
   opt="$1"
@@ -45,6 +47,10 @@ while [ $# -gt 0 ]; do
         summary_file="$1"
         shift
       fi
+      ;;
+    -m|--modules)
+      summary=false
+      analizo_options=""
       ;;
     -*|--*)
       echo "Invalid option: $opt"
@@ -78,7 +84,7 @@ for dir in $input; do
     info "Processing $project ..."
   fi
 
-  analizo metrics -g "$dir" > "$output"
+  analizo metrics $analizo_options "$dir" > "$output"
 
   # directory did not contain source code, analizo produced nothing
   if [ ! -s "$output" ]; then
