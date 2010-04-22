@@ -153,7 +153,7 @@ if $PROGRAM_NAME == __FILE__
           end
         end
       else
-        $stderr.puts "W: {yml} seems to be empty"
+        $stderr.puts "W: #{yml} seems to be empty"
       end
     end
   end
