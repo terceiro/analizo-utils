@@ -84,7 +84,7 @@ class EvolutionMatrix
     @cells[mod] && @cells[mod][version]
   end
   def empty?
-    !@cells.nil?
+    @cells.nil?
   end
   def cell_width
     @cell_width || 'nom'
@@ -153,11 +153,13 @@ if $PROGRAM_NAME == __FILE__
           end
         end
       else
-        $stderr.puts "#W: {yml} seems to be empty"
+        $stderr.puts "W: {yml} seems to be empty"
       end
     end
   end
-  unless matrix.empty?
+  if matrix.empty?
+    $stderr.puts "E: no data found! Do the input files contain module data?"
+  else
     template = ERB.new(DATA.read)
     output.print(template.result(my_binding))
   end
