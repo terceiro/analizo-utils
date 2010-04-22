@@ -1,4 +1,5 @@
 SUBDIRS = scripts
+EXTRA_DIST = README.rst
 
 AUTHORS:
 	@echo "Updating AUTHORS file ..."
