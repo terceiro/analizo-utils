@@ -83,6 +83,9 @@ class EvolutionMatrix
   def get(mod, version)
     @cells[mod] && @cells[mod][version]
   end
+  def empty?
+    !@cells.nil?
+  end
   def cell_width
     @cell_width || 'nom'
   end
@@ -141,17 +144,23 @@ if $PROGRAM_NAME == __FILE__
   data_files.each do |yml|
     version = yml.sub(/^.*-(.*)\.yml$/, '\1')
     File.open(yml) do |f|
-      $stderr.puts "Processing #{yml} ..."
+      $stderr.puts "I: Processing #{yml} ..."
       stream = YAML.load_stream(f)
-      stream.documents.each do |doc|
-        if doc['_module']
-          matrix.put(doc['_module'], version, doc)
+      if stream
+        stream.documents.each do |doc|
+          if doc['_module']
+            matrix.put(doc['_module'], version, doc)
+          end
         end
+      else
+        $stderr.puts "#W: {yml} seems to be empty"
       end
     end
   end
-  template = ERB.new(DATA.read)
-  template.run(my_binding)
+  unless matrix.empty?
+    template = ERB.new(DATA.read)
+    output.print(template.result(my_binding))
+  end
 end
 
 __END__
