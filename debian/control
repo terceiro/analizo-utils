@@ -10,7 +10,7 @@ Vcs-Browser: http://github.com/terceiro/analizo-utils
 
 Package: analizo-utils
 Architecture: all
-Depends: ruby, ${shlibs:Depends}, ${misc:Depends}
+Depends: analizo, ruby, ${shlibs:Depends}, ${misc:Depends}
 Description: Utilities used together with analizo
  analizo-utils contains utility scripts for analizo. Most of the scripts are
  user to do large-scale processing of source code, like processing several
